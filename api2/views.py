@@ -58,18 +58,7 @@ class UserPage(APIView):
         return Response(data=userJson, status=status.HTTP_200_OK)
 
 
-# class MyPage(APIVIew):
-#     def get(self, request, format=None):
-#         payload = jwt_payload(request)
-
-#         try:
-#             user = UserModel.objects.get(
-
-#             )
-
 # 로그인
-
-
 class UserLogin(APIView):
     def get(self, request, fromat=None):
         payload = jwt_payload(request)
@@ -112,10 +101,6 @@ class UserLogin(APIView):
 # 회원가입
 class UserRegister(APIView):
     def get(self, request, format=None):
-        # print(request.user)
-        # token = request.META['HTTP_AUTHORIZATION']
-        # payload = jwt.decode(token, settings.SECRET_KEY)
-        # print(payload['username'])
         user = UserModel.objects.all()
 
         serializer = serializers.UserGetSerializer(
@@ -153,7 +138,6 @@ class PasswordChange(APIView):
 
 
 # 팔로우
-# @api_view(['POST', 'DELETE'])
 class Follow(APIView):
 
     # permission_classes = (IsAuthenticated,)
@@ -162,12 +146,11 @@ class Follow(APIView):
 
     def post(self, request, user_id, format=None):
         payload = jwt_payload(request)
-        # print(1234)
         print(self.get_object(user_id))
         if UserModel.follow_to(self.get_object(payload['user_id']), self.get_object(user_id)):
             return Response(data={'result': True}, status=status.HTTP_201_CREATED)
         else:
-            return Response(data={'message': '씨밤 뭐가 문제야'}, status=status.HTTP_409_CONFLICT)
+            return Response(data={'message': '에러가 발생했습니다.'}, status=status.HTTP_409_CONFLICT)
 
     def delete(self, request, user_id, format=None):
         payload = jwt_payload(request)
@@ -175,7 +158,7 @@ class Follow(APIView):
         if UserModel.unfollow_to(self.get_object(payload['user_id']), self.get_object(user_id)):
             return Response(data={'result': False}, status=status.HTTP_201_CREATED)
         else:
-            return Response(data={'message': '씨밤 뭐가 문제야'}, status=status.HTTP_409_CONFLICT)
+            return Response(data={'message': '에러가 발생했습니다.'}, status=status.HTTP_409_CONFLICT)
 
 
 class Following(APIView):

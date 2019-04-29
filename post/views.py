@@ -25,14 +25,10 @@ class MyPost(APIView):
     def get(self, request, limit_id, user_id, format=None):
         payload = jwt_payload(request)
 
-        data = {}
-        print(1234)
-        print(limit_id)
         user = usermodel.UserModel.objects.get(id=user_id)
         posts = PostModel.objects.filter(
             user_id=user).order_by('-created_at')[:limit_id]
         serializer = serializers.PostGet(posts, many=True)
-        print(serializer.data)
         return Response(data=serializer.data)
 
 
@@ -65,11 +61,8 @@ class Post(APIView):
         data = {}
         data['author'] = user.name
         data['content'] = request.data['content']
-        try:
-            data['image'] = request.data['image']
-            serializer = serializers.PostImageCreateSerializer(data=data)
-        except Exception:
-            serializer = serializers.PostNullImageCreateSerializer(data=data)
+
+        serializer = serializers.PostCreateSerializer(data=data)
 
         if serializer.is_valid():
             serializer.save(user_id=user)
@@ -133,14 +126,10 @@ class Comment(APIView):
             data['author_id'] = user.id
             data['author_name'] = user.name
             data['content'] = request.data['content']
-            data['image'] = request.data['image']
-            serializer = serializers.CommentImageCreateSerializer(data=data)
+            serializer = serializers.CommentCreateSerializer(
+                data=data)
         except PostModel.DoesNotExist:
             return Response(data={'message': '글이 존재하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception:
-            print(data)
-            serializer = serializers.CommentNullImageCreateSerializer(
-                data=data)
         if serializer.is_valid():
             serializer.save(post=post)
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
@@ -160,7 +149,7 @@ class Comment_REST(APIView):
         if comment.author == payload['username']:
             comment.content = request.data['content']
             comment.save()
-            return Response(data={'message': '수정이 잘됨'}, status=status.HTTP_205_RESET_CONTENT)
+            return Response(data={'message': '수정이 되었습니다.'}, status=status.HTTP_205_RESET_CONTENT)
         else:
             return Response(data={'message': '권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -173,20 +162,6 @@ class Comment_REST(APIView):
 
         if comment.author == payload['username']:
             comment.delete()
-            return Response(data={'message': '삭제가 잘됨'}, status=status.HTTP_205_RESET_CONTENT)
+            return Response(data={'message': '삭제가 되었습니다.'}, status=status.HTTP_205_RESET_CONTENT)
         else:
             return Response(data={'message': '권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-# class Like(APIView):
-
-#     def get_object(self, id):
-#         return get_object_or_404(UserModel, id=id)
-
-#     def post(self, request, post_id, fromat=None):
-#         payload = jwt_payload(request)
-
-#         if PostModel.like_to(self.get_object(payload['user_id']), self.get_object(post_id)):
-#             return Response(data={'result': True}, status=status.HTTP_201_CREATED)
-#         else:
-#             return Response(data={'message': '씨밤 뭐가 문제야'}, status=status.HTTP_409_CONFLICT)
