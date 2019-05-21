@@ -165,3 +165,26 @@ class Comment_REST(APIView):
             return Response(data={'message': '삭제가 되었습니다.'}, status=status.HTTP_205_RESET_CONTENT)
         else:
             return Response(data={'message': '권한이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Search_REST(APIView):
+    def get(self, request, format=None):
+        print(12)
+
+        data = {}
+        post = PostModel.objects.all()
+        print(123)
+        user = usermodel.UserModel.objects.all()
+        sear = request.GET.get('sear', '')
+
+        PostSearch = post.filter(content__icontains=sear)
+
+        UserSearch = user.filter(name__icontains=sear)
+
+        serializer1 = serializers.SearchUser(UserSearch, many=True)
+        serializer2 = serializers.SearchPost(PostSearch, many=True)
+
+        print(serializer1.data)
+        print(serializer2.data)
+
+        return Response(data={'user': serializer1.data, 'post': serializer2.data})

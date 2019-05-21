@@ -14,4 +14,5 @@ urlpatterns = [
          view=Comment.as_view(), name='Comment'),
     path("comment/<int:post_id>/<int:comment_id>/",
          view=Comment_REST.as_view(), name='Comment_REST'),
+    path("search/", view=Search_REST.as_view(), name="Search_REST")
 ] + static(settings.POST_IMAGE_URL, document_root=settings.POST_IMAGE_ROOT)

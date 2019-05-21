@@ -101,6 +101,7 @@ class UserLogin(APIView):
 # 회원가입
 class UserRegister(APIView):
     def get(self, request, format=None):
+
         user = UserModel.objects.all()
 
         serializer = serializers.UserGetSerializer(
@@ -138,6 +139,7 @@ class PasswordChange(APIView):
 
 
 # 팔로우
+# @api_view(['POST', 'DELETE'])
 class Follow(APIView):
 
     # permission_classes = (IsAuthenticated,)
@@ -146,6 +148,7 @@ class Follow(APIView):
 
     def post(self, request, user_id, format=None):
         payload = jwt_payload(request)
+        # print(1234)
         print(self.get_object(user_id))
         if UserModel.follow_to(self.get_object(payload['user_id']), self.get_object(user_id)):
             return Response(data={'result': True}, status=status.HTTP_201_CREATED)

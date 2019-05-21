@@ -32,3 +32,17 @@ class CommentGet(serializers.ModelSerializer):
     class Meta:
         model = CommentModel
         fields = ('post', 'author_id', 'author_name', 'content')
+
+
+class SearchPost(serializers.ModelSerializer):
+
+    class Meta:
+        model = PostModel
+        fields = ('author', 'content')
+
+
+class SearchUser(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserModel.UserModel
+        fields = ('name', 'phone')
